@@ -1,9 +1,10 @@
 package main
 
+import "fmt"
 
 func main(){
-
-    var a = 5
+    
+    var a = "initial"
     fmt.Println(a)
 
     var b, c int = 1, 2
@@ -15,7 +16,7 @@ func main(){
     var e int
     fmt.Println(e)
 
-    f := 5.6
+    f := "apple"
     fmt.Println(f)
 
 }

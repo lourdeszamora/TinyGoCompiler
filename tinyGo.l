@@ -1,5 +1,6 @@
 %option yylineno
 %option noyywrap
+
 %{
 
 #include <string.h>
@@ -29,13 +30,16 @@ LETTER [A-Za-z] | "_"
 "true"   { cout << "true_keyword" << endl; }
 "false"  { cout << "false_keyword" << endl; }
 "int"  { cout << "int_keyword" << endl; }
-"float32"  { cout << "float32" << endl; }
+"float32"  { cout << "float32_keyword" << endl; }
 "fmt.Println" { cout << "fmt.Println" << endl; }
-"bool" { cout << "bool" << endl; }
+"bool" { cout << "bool_keyword" << endl; }
 "string"  { cout << "string_keyword" << endl; }
-([a-zA-Z]|_)({DIGIT}|[a-zA-Z_0-9]|_)* { cout << "ID" << endl; }
-{DIGIT}+ { cout << "int_value" << endl;  }
-{DIGIT}+"."{DIGIT}+ { cout << "float_value" << endl; }
+([a-zA-Z]|_)({DIGIT}|[a-zA-Z_0-9]|_)* { cout << "ID "<< yytext << endl; }
+"//".*\n {cout << "Coment_Line" << endl;}
+"/"[^/]"/" {cout << "Coment_BLOCK" << endl;}
+\"([^\\\"]|\\.)*\" {cout << "Strig_Value "<< yytext << endl;}
+{DIGIT}+ { cout << "int_value " << yytext << endl;  }
+{DIGIT}+"."{DIGIT}+ { cout << "float_value "<< yytext << endl; }
 "!" { cout << "!" << endl; }
 ";" { cout << ";" << endl; }
 "," { cout << "," << endl; }
