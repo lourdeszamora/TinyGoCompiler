@@ -24,6 +24,7 @@ SPACES \n | \r | \t
 "var"    { cout << "var_keyword" << endl; }
 "true"   { cout << "true_keyword" << endl; }
 "false"  { cout << "false_keyword" << endl; }
+"false"  { cout << "false_keyword" << endl; }
 "int"  { cout << "int_keyword" << endl; }
 "float32"  { cout << "float32" << endl; }
 "false"  { cout << "false_keyword" << endl; }
