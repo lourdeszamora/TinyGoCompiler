@@ -1,20 +1,24 @@
-%option yylineo
-
+%option yylineno
+%option noyywrap
 %{
 
 #include <string.h>
 #include <stdlib.h>
+#include <iostream>
+#include "main.cpp"
+
+using namespace std;
 
 %}
 
 DIGIT [0-9]
 LETTER [A-Za-z] | "_"
-ID {LETTER}+ {DIGIT}* | {LETTER}*
-SPACES \n | \r | \t
 %%
-{SPACES} {/* ignore */}
+[\t \r \n] {/* ignore */}
 "break"  { cout << "break_keyword" << endl; }
-"func"   { cout << "func_keyword" << endl; }
+"package"  { cout << "package_keyword" << endl; }
+"func"  { cout << "func_keyword" << endl; }
+"main"   { cout << "main_keyword" << endl; }
 "else"   { cout << "else_keyword" << endl; }
 "if"     { cout << "if_keyword" << endl; }
 "continue"   { cout << "continue_keyword" << endl; }
@@ -24,13 +28,12 @@ SPACES \n | \r | \t
 "var"    { cout << "var_keyword" << endl; }
 "true"   { cout << "true_keyword" << endl; }
 "false"  { cout << "false_keyword" << endl; }
-"false"  { cout << "false_keyword" << endl; }
 "int"  { cout << "int_keyword" << endl; }
 "float32"  { cout << "float32" << endl; }
-"false"  { cout << "false_keyword" << endl; }
+"fmt.Println" { cout << "fmt.Println" << endl; }
 "bool" { cout << "bool" << endl; }
 "string"  { cout << "string_keyword" << endl; }
-{ID} { cout << "ID" << endl; }
+([a-zA-Z]|_)({DIGIT}|[a-zA-Z_0-9]|_)* { cout << "ID" << endl; }
 {DIGIT}+ { cout << "int_value" << endl;  }
 {DIGIT}+"."{DIGIT}+ { cout << "float_value" << endl; }
 "!" { cout << "!" << endl; }
@@ -46,6 +49,7 @@ SPACES \n | \r | \t
 "]" {  cout << "]" << endl; }
 "{" {  cout << "{" << endl; }
 "}" {  cout << "}" << endl; }
+":" { cout << "-" << endl; }
 "+=" {  cout << "TK_PLUS_EQUAL" << endl; }
 "-=" {  cout << "TK_MINUS_EQUAL" << endl; }
 "++" {  cout << "TK_PLUS_PLUS" << endl; }
@@ -58,6 +62,7 @@ SPACES \n | \r | \t
 "<" {  cout << "<" << endl; }
 ">=" {  cout << "TK_GREATER_OR_EQUAL" << endl; }
 "<=" {  cout << "TK_LESS_OR_EQUAL" << endl; }
-"(" {  cout << "(" << endl" << endl; }
+"(" {  cout << "(" << endl; }
+")" {  cout << ")" << endl; }
 . { printf("caracter '%c' invalido en la linea %d\n", yytext[0], yylineno); }
 %%
