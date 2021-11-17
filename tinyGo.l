@@ -36,10 +36,11 @@ LETTER [A-Za-z] | "_"
 "string"  { cout << "string_keyword" << endl; }
 ([a-zA-Z]|_)({DIGIT}|[a-zA-Z_0-9]|_)* { cout << "ID "<< yytext << endl; }
 "//".*\n {cout << "Coment_Line" << endl;}
-"/"[^/]"/" {cout << "Coment_BLOCK" << endl;}
+"/*"[^/]"*/" {cout << "Coment_BLOCK" << endl;}
 \"([^\\\"]|\\.)*\" {cout << "Strig_Value "<< yytext << endl;}
 {DIGIT}+ { cout << "int_value " << yytext << endl;  }
 {DIGIT}+"."{DIGIT}+ { cout << "float_value "<< yytext << endl; }
+"." { cout << "." << endl; }
 "!" { cout << "!" << endl; }
 ";" { cout << ";" << endl; }
 "," { cout << "," << endl; }
@@ -68,5 +69,5 @@ LETTER [A-Za-z] | "_"
 "<=" {  cout << "TK_LESS_OR_EQUAL" << endl; }
 "(" {  cout << "(" << endl; }
 ")" {  cout << ")" << endl; }
-. { printf("caracter '%c' invalido en la linea %d\n", yytext[0], yylineno); }
+. { printf("caracter '%c' invalido en la linea %d\n", yytext[0], yylineno);}
 %%
