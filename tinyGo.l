@@ -16,57 +16,57 @@ DIGIT [0-9]
 LETTER [A-Za-z] | "_"
 %%
 [\t \r \n] {/* ignore */}
-"break"  { cout << "break_keyword" << endl; }
-"package"  { cout << "package_keyword" << endl; }
-"func"  { cout << "func_keyword" << endl; }
-"main"   { cout << "main_keyword" << endl; }
-"else"   { cout << "else_keyword" << endl; }
-"if"     { cout << "if_keyword" << endl; }
-"continue"   { cout << "continue_keyword" << endl; }
-"for"    { cout << "for_keyword" << endl; }
-"import" { cout << "import_keyword"<< endl; }
-"return" { cout << "return_keyword" << endl; }
-"var"    { cout << "var_keyword" << endl; }
-"true"   { cout << "true_keyword" << endl; }
-"false"  { cout << "false_keyword" << endl; }
-"int"  { cout << "int_keyword" << endl; }
-"float32"  { cout << "float32_keyword" << endl; }
-"fmt.Println" { cout << "fmt.Println" << endl; }
-"bool" { cout << "bool_keyword" << endl; }
-"string"  { cout << "string_keyword" << endl; }
-([a-zA-Z]|_)({DIGIT}|[a-zA-Z_0-9]|_)* { cout << "ID "<< yytext << endl; }
-"//".*\n {cout << "Coment_Line" << endl;}
-"/"[^/]"/" {cout << "Coment_BLOCK" << endl;}
-\"([^\\\"]|\\.)*\" {cout << "Strig_Value "<< yytext << endl;}
-{DIGIT}+ { cout << "int_value " << yytext << endl;  }
-{DIGIT}+"."{DIGIT}+ { cout << "float_value "<< yytext << endl; }
-"!" { cout << "!" << endl; }
-";" { cout << ";" << endl; }
-"," { cout << "," << endl; }
-"+" { cout << "+" << endl; }
-"-" { cout << "-" << endl; }
-"/" { cout << "/" << endl; }
-"*" { cout << "*" << endl; }
-"%" { cout << "%" << endl; }
-"=" { cout << "=" << endl; }
-"[" {  cout << "[" << endl; }
-"]" {  cout << "]" << endl; }
-"{" {  cout << "{" << endl; }
-"}" {  cout << "}" << endl; }
-":=" { cout << ":=" << endl; }
-"+=" {  cout << "TK_PLUS_EQUAL" << endl; }
-"-=" {  cout << "TK_MINUS_EQUAL" << endl; }
-"++" {  cout << "TK_PLUS_PLUS" << endl; }
-"--" {  cout << "TK_MINUS_MINUS" << endl; }
-"||" {  cout << "TK_OR" << endl; }
-"&&" {  cout << "TK_AND" << endl; }
-"==" {  cout << "TK_EQUAL" << endl; }
-"!=" {  cout << "TK_NOT_EQUAL" << endl; }
-">" {  cout << ">" << endl; }
-"<" {  cout << "<" << endl; }
-">=" {  cout << "TK_GREATER_OR_EQUAL" << endl; }
-"<=" {  cout << "TK_LESS_OR_EQUAL" << endl; }
-"(" {  cout << "(" << endl; }
-")" {  cout << ")" << endl; }
+"break"    { return BREAK; }
+"package"  { return PACKAGE; }
+"func"     { return FUNC; }
+"main"     { return MAIN; }
+"else"     { return ELSE; }
+"if"       { return IF; }
+"continue" { return CONTINUE; }
+"for"      { return FOR; }
+"import"   { return IMPORT; } 
+"return"   { return _RETURN; }
+"var"      { return VAR; }
+"true"     { return TRUE; }
+"false"    { return FALSE; }
+"int"      { return INT; }
+"float32"  { return FLOAT; }
+"fmt.Println" { return PRINTLN; }
+"bool"        { return BOOL; }
+"string"      { return STRING; }
+([a-zA-Z]|_)({DIGIT}|[a-zA-Z_0-9]|_)* { return TK_ID; }
+"//".*\n {/* ignore */}
+"/"[^/]"/" {/* ignore */}
+\"([^\\\"]|\\.)*\" { return STRING_LIT; }
+{DIGIT}+ { return TK_LIT_INT ; }
+{DIGIT}+"."{DIGIT}+ { return TK_LIT_FLOAT ; }
+"!" { return '!'; }
+";" {  return ';';}
+"," {  return ','; }
+"+" {  return '+';}
+"-" {  return '-'; }
+"/" {  return '/';}
+"*" {  return '*'; }
+"%" {  return '%';}
+"=" {  return '='; }
+"[" {  return '['; }
+"]" {  return ']';}
+"{" {   return '{'; }
+"}" {   return '}'; }
+":=" {  return DOSPUNTOSIGUAL; }
+"+=" {  return TK_PLUS_EQUAL ; }
+"-=" {  return TK_MINUS_EQUAL ; }
+"++" {  return TK_PLUS_PLUS ; }
+"--" {  return TK_MINUS_MINUS ; }
+"||" {  return TK_OR ; }
+"&&" {  return TK_AND; }
+"==" {  return TK_EQUAL ; }
+"!=" {  return TK_NOT_EQUAL ; }
+">" {   return '>' ; }
+"<" {   return '<' ;}
+">=" {  return TK_GREATER_OR_EQUAL ; }
+"<=" {  return TK_LESS_OR_EQUAL ; }
+"("  {  return '(' ; }
+")" {  return ')'  ; }
 . { printf("caracter '%c' invalido en la linea %d\n", yytext[0], yylineno); }
 %%
