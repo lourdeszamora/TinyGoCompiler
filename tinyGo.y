@@ -25,7 +25,7 @@
     ParameterList * parameter_list_t;
 }
 
-%token BREAK PACKAGE FUNC MAIN ELSE IF CONTINUE FOR IMPORT _RETURN VAR TRUE FALSE INT FLOAT PRINTLN BOOL STRING
+%token BREAK PACKAGE DOSPUNTOSIGUAL FUNC MAIN ELSE IF CONTINUE FOR STRING_LIT IMPORT _RETURN VAR TRUE FALSE INT FLOAT PRINTLN BOOL STRING
 %token<string_t> TK_ID
 %token<float_t>  TK_LIT_FLOAT
 %token<int_t> TK_LIT_INT
@@ -35,73 +35,68 @@
 %type<parameter_list_t> param_list arg_list*/
 
 %%
-start: input{
+start: input/*{
     list<Statement *>::iterator it = $1->begin();
     while(it != $1->end()){
         (*it)->printResult();
         it++;
     }
-}
+}*/;
 
-input: input external_stmt {$$ = $1; $$->push_back($2);}
-    | external_stmt {$$ = new StatementList; $$->push_back($1);}
+input: packs imports func_list;
+
+packs: PACKAGE TK_ID;
+
+imports: IMPORT spec
+
+spec: TK_ID
+    | '(' TK_ID ';' ')'
+    | '(' STRING_LIT ')'
     ;
 
-external_stmt : method_decl {$$ = $1;}
-    |  variable_decl {$$ = $1;}
-    |  expr_stmt {$$ = new ExprStatement($1, yylineno);}
-    |  while_stmt {$$ = $1;}
-    |  method_invoc {$$ = $1;}
-    ;
-
-method_decl: LET TK_ID '(' param_list ')' '=' statements { 
-                    $$ = new MethodDefinition( $2, *$4, *$7, yylineno );
-                    delete $4;
-                    };
-
-param_list: param_list ',' TK_ID {$$ = $1; $$->push_back(new IdExpr($3, yylineno));}
-            | TK_ID  { $$ = new ParameterList; $$->push_back(new IdExpr($1, yylineno)); }
-            ;
-
-statements:  statement { $$ = new StatementList; $$->push_back($1); }
-    | statements ';' statement   { $$ = $1; $$->push_back($3); }
-    ;
-
-statement: variable_decl {$$ = $1;}
-    | expr_stmt {$$ = new ExprStatement($1, yylineno);}
-    | while_stmt {$$ = $1;}
-    | method_invoc {$$ = $1;}
-    | assign_stmt { $$ = $1; }
-    ;
-
-assign_stmt: TK_ID '=' expr_stmt { $$ = new AsigStatement($1,$3, yylineno);};
-
-method_invoc: TK_ID '(' arg_list ')' { $$ = new MethodInvocationStmt($1, *$3, yylineno); }
-
-arg_list: arg_list ',' term {$$ = $1; $$->push_back($3);}
-            | term { $$ = new ParameterList; $$->push_back($1); }
-            ;
-
-variable_decl: LET TK_ID '=' expr_stmt { $$ = new Declarator($2,$4,yylineno); }
-
-expr_stmt:  expr_stmt ADD factor { $$ = new BinaryExpr( '+', $1, $3, yylineno); }
-    | expr_stmt SUB factor { $$ = new BinaryExpr( '-', $1, $3, yylineno); }
-    | factor { $$ = $1; }
-    ;
-
-factor: factor MUL term { $$ = new BinaryExpr( '*', $1, $3, yylineno); }
-    | factor DIV term { $$ = new BinaryExpr( '/', $1, $3, yylineno); }
-    | term { $$ = $1; }
-    ;
-
-term: TK_LIT_FLOAT {$$ = new FloatExpr($1, yylineno); }
-    | TK_ID { $$ = new IdExpr($1, yylineno); }
-    ;
-
-while_stmt: WHILE '(' rel_expr ')' DO statements DONE { $$ = new WhileStatement( $3, *$6, yylineno); }
-
-rel_expr: expr_stmt '>' expr_stmt { $$ = new BinaryExpr( '>', $1, $3, yylineno); }
-        | expr_stmt '<' expr_stmt { $$ = new BinaryExpr( '<', $1, $3, yylineno); }
+func_list: func_list func
+        | func
         ;
 
-%%
+func: FUNC TK_ID '(' args ')' '{' statements '}' ;
+
+args: args ',' arg
+    | arg
+    ;
+
+arg: TK_ID type;
+
+type: INT | STRING | FLOAT | BOOL;
+
+statements: decl
+        |   if_stmt
+        |   return_stmt
+        |   break_stmt
+        |   continue_stmt
+        |   for_stmt
+        |   expr_stmt
+        |   inc_stmt
+        |   dec_stmt
+        |   asig_stmt
+        ;
+decl: var_decl
+    | special_decl
+    | asig_decl
+    ;
+
+var_decl: VAR TK_ID type ass_var;
+
+ass_var: '=' value
+        | {/* empty */}
+        ;
+
+special_decl: TK_ID DOSPUNTOSIGUAL value
+
+
+value: STRING_LIT 
+    | TRUE 
+    | FALSE 
+    | TK_LIT_INT
+    | TK_LIT_FLOAT
+    | expr 
+    ;

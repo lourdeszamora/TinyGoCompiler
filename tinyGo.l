@@ -13,7 +13,6 @@ using namespace std;
 %}
 
 DIGIT [0-9]
-LETTER [A-Za-z] | "_"
 %%
 [\t \r \n] {/* ignore */}
 "break"    { return BREAK; }
