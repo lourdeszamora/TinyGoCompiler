@@ -3,18 +3,16 @@
 
 %{
 
-#include <string.h>
-#include <stdlib.h>
-#include <iostream>
-#include "main.cpp"
 
-using namespace std;
+#include "tokens.h"
+
 
 %}
 
 DIGIT [0-9]
 %%
-[\t \r \n] {/* ignore */}
+[\t \r] {/* ignore */}
+\n { return EOL; }
 "break"    { return BREAK; }
 "package"  { return PACKAGE; }
 "func"     { return FUNC; }
@@ -24,7 +22,7 @@ DIGIT [0-9]
 "continue" { return CONTINUE; }
 "for"      { return FOR; }
 "import"   { return IMPORT; } 
-"return"   { return _RETURN; }
+"return"   { return RETN; }
 "var"      { return VAR; }
 "true"     { return TRUE; }
 "false"    { return FALSE; }
