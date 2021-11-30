@@ -51,9 +51,14 @@ imports: IMPORT spec spaces;
 
 spec: TK_ID 
     | '(' spaces TK_ID  ';' spaces ')' 
-    | '(' spaces STRING_LIT spaces ')' 
-    | STRING_LIT 
+    | '(' spaces string_list spaces ')' 
+    | STRING_LIT
     ;
+    
+string_list: string_list spaces STRING_LIT
+            | STRING_LIT
+            ;
+
 spaces: EOL spaces
     | EOL;
 
@@ -61,7 +66,7 @@ func_list: func_list spaces func
         | func 
         ;
 
-func: FUNC func_id '(' args ')' block;
+func: FUNC func_id '(' args ')' func_type block;
 
 func_id: MAIN | TK_ID;
 
@@ -71,10 +76,20 @@ args: args ',' arg
     ;
 
 arg: TK_ID type
-    | TK_ID '[' TK_LIT_INT ']' type;
+    | TK_ID '[' ']' type;
 
-type: INT | STRING | FLOAT | BOOL;
+type: INT 
+    | STRING 
+    | FLOAT 
+    | BOOL
+    ;
 
+func_type: type
+    | '['']' type
+    | {/*empty*/}
+    ;
+
+    
 statements: statements statement spaces
             |  spaces {/**/}
             ;
@@ -101,8 +116,12 @@ decl: var_decl
     | asig_decl
     ;
 
-array_special_decl: TK_ID DOSPUNTOSIGUAL '[' TK_LIT_INT ']' type '{' value_list '}';
+array_special_decl: TK_ID DOSPUNTOSIGUAL '[' array_length ']' type '{' value_list '}';
 
+array_length: TK_LIT_INT
+        | {/**/}
+        ;   
+        
 array_decl: VAR TK_ID '[' TK_LIT_INT ']' type assig_array;
 
 
@@ -132,12 +151,16 @@ special_decl: TK_ID DOSPUNTOSIGUAL value ;
 
 asig_decl: VAR id_list '=' assig_list;
 
-value: STRING_LIT // preguntar a lou si un value puede ser un TK_ID 
+value: STRING_LIT 
     | expr 
+    | rel_expr
     ;
 
-if_stmt: IF rel_expr block
-    | IF rel_expr block ELSE block
+if_stmt: IF expr_if block
+    | IF expr_if block ELSE else_if
+    ;
+else_if: block
+    | if_stmt
     ;
 
 block: '{' statements'}'; /* cosa*/
@@ -161,6 +184,7 @@ for_stmt: FOR partI_for ';' rel_expr ';' post_part_for block
         | FOR rel_expr block
         | FOR block  // EVALUAR SEMANTICO AQUI QUE LLEVE BREAK
         ;
+
     
 partI_for: assign_stmt 
     | special_decl
@@ -186,8 +210,10 @@ special_expr:TK_ID TK_PLUS_EQUAL value
     | TK_ID TK_MINUS_EQUAL value
     ;
 
-assign_stmt: TK_ID '=' value ;
+assign_stmt: TK_ID array_matter '=' value ;
 
+array_matter: '[' expr ']' 
+            | {/*empty*/};
 
 expr:  expr '+' factor 
     | expr '-' factor 
@@ -203,13 +229,24 @@ factor: factor '*' term
 term: TK_LIT_FLOAT 
     | TK_ID 
     | TK_LIT_INT
-    | TK_ID '[' TK_LIT_INT ']'
+    | TK_ID '[' expr ']'
+    | '(' expr ')'
+    | TK_ID'(' value_list ')'
     ;
 
+expr_if: rel_expr 
+    | special_decl ';' rel_expr
+    ;
 
-/*rel_expr: rel_expr*/
+rel_expr: rel_expr TK_OR rel_expr_factor
+        | rel_expr_factor
+        | '(' rel_expr ')'
+        ;
 
-rel_expr: expr '>' expr
+rel_expr_factor: rel_expr_factor TK_AND rel_expr_term
+                | rel_expr_term;
+
+rel_expr_term: expr '>' expr
         | expr '<' expr
         | expr TK_GREATER_OR_EQUAL expr
         | expr TK_LESS_OR_EQUAL expr

@@ -8,7 +8,7 @@
 
 
 %}
-
+%x BLOCK_COMMENT
 DIGIT [0-9]
 %%
 [\t \r] {/* ignore */}
@@ -33,7 +33,7 @@ DIGIT [0-9]
 "string"      { return STRING; }
 ([a-zA-Z]|_)({DIGIT}|[a-zA-Z_0-9]|_)* { return TK_ID; }
 "//".*\n {/* ignore */}
-"/"[^/]"/" {/* ignore */}
+"/*" { BEGIN(BLOCK_COMMENT); }
 \"([^\\\"]|\\.)*\" { return STRING_LIT; }
 {DIGIT}+ { return TK_LIT_INT ; }
 {DIGIT}+"."{DIGIT}+ { return TK_LIT_FLOAT ; }
@@ -65,5 +65,8 @@ DIGIT [0-9]
 "<=" {  return TK_LESS_OR_EQUAL ; }
 "("  {  return '(' ; }
 ")" {  return ')'  ; }
+<BLOCK_COMMENT>"*/" { BEGIN(INITIAL); }
+<BLOCK_COMMENT>\n   { }
+<BLOCK_COMMENT>.    { }
 . { printf("caracter '%c' invalido en la linea %d\n", yytext[0], yylineno); }
 %%

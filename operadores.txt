@@ -10,8 +10,7 @@ func main() {
     /*
 	Operadores basicos
     */
-    a:= rand.Float32() * 100
-    b:= rand.Float32() * 100
+    
 
     fmt.Println("a = ", a)
     fmt.Println("b = ", b)
