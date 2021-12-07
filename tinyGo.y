@@ -16,9 +16,9 @@
 %}
 /*
 
-declaraciones var fuera de las funciones
-Id en relational expresion
-Enter { } en el if.
+declaraciones var fuera de las funciones [-------------------:)-----------------------]
+Id en relational expresion [-------------------:)-----------------------]
+Enter { } en el if. [-------------------:)-----------------------]
 
 */
 
@@ -71,6 +71,8 @@ spaces: EOL spaces
 
 func_list: func_list spaces func 
         | func 
+        | var_decl
+        | asig_decl
         ;
 
 func: FUNC func_id '(' args ')' func_type block;
@@ -142,6 +144,9 @@ value_list: value_list ',' value
 
 var_decl: VAR id_list type ass_var;
 
+
+
+
 id_list: id_list ',' TK_ID
         | TK_ID
         ;
@@ -160,7 +165,6 @@ asig_decl: VAR id_list '=' assig_list;
 
 value: STRING_LIT 
     | expr 
-    | rel_expr
     ;
 
 if_stmt: IF expr_if block
@@ -187,8 +191,8 @@ label_empty: TK_ID
 continue_stmt: CONTINUE label_empty;
 
 
-for_stmt: FOR partI_for ';' rel_expr ';' post_part_for block
-        | FOR rel_expr block
+for_stmt: FOR partI_for ';' expr ';' post_part_for block
+        | FOR expr block
         | FOR block  // EVALUAR SEMANTICO AQUI QUE LLEVE BREAK
         ;
 
@@ -222,15 +226,37 @@ assign_stmt: TK_ID array_matter '=' value ;
 array_matter: '[' expr ']' 
             | {/*empty*/};
 
-expr:  expr '+' factor 
-    | expr '-' factor 
+expr: '!' expr_initial
+    | expr_initial
+    ;
+
+expr_initial:  expr_initial '+' factor 
+    | expr_initial '-' factor 
     | factor 
     ;
 
-factor: factor '*' term 
-    | factor '/' term 
-    | factor '%' term
-    | term 
+factor: factor '*' rel_expr 
+    | factor '/' rel_expr 
+    | factor '%' rel_expr
+    | rel_expr 
+    ;
+
+rel_expr: rel_expr '>' eq_expr
+        | rel_expr '<' eq_expr
+        | rel_expr TK_GREATER_OR_EQUAL eq_expr
+        | rel_expr TK_LESS_OR_EQUAL eq_expr
+        | eq_expr
+        ;
+eq_expr: eq_expr TK_EQUAL and_expr
+        | eq_expr TK_NOT_EQUAL and_expr
+        | and_expr
+        ;
+
+and_expr: and_expr TK_AND or_expr
+        | or_expr
+        ;
+or_expr: or_expr TK_OR term
+    | term
     ;
 
 term: TK_LIT_FLOAT 
@@ -239,28 +265,12 @@ term: TK_LIT_FLOAT
     | TK_ID '[' expr ']'
     | '(' expr ')'
     | TK_ID'(' value_list ')'
+    | TRUE
+    | FALSE
     ;
 
-expr_if: rel_expr 
-    | special_decl ';' rel_expr
+expr_if: expr 
+    | special_decl ';' expr
     ;
 
-rel_expr: rel_expr TK_OR rel_expr_factor
-        | rel_expr_factor
-        | '(' rel_expr ')'
-        ;
 
-rel_expr_factor: rel_expr_factor TK_AND rel_expr_term
-                | rel_expr_term;
-
-rel_expr_term: expr '>' expr
-        | expr '<' expr
-        | expr TK_GREATER_OR_EQUAL expr
-        | expr TK_LESS_OR_EQUAL expr
-        | expr TK_EQUAL expr
-        | expr TK_NOT_EQUAL expr
-        | '!' expr
-        | TRUE
-        | FALSE
-        
-        ;
