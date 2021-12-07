@@ -14,6 +14,13 @@
 
     #define YYERROR_VERBOSE 1
 %}
+/*
+
+declaraciones var fuera de las funciones
+Id en relational expresion
+Enter { } en el if.
+
+*/
 
 /*%union{
     const char * string_t;
@@ -255,4 +262,5 @@ rel_expr_term: expr '>' expr
         | '!' expr
         | TRUE
         | FALSE
+        
         ;

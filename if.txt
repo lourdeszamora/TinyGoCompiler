@@ -12,7 +12,7 @@ func main() {
     */
     var a, b int = 5, 8
 	
-    if a%2 == 0 {
+    if (a%2 == 0) {
         fmt.Println("a is even")
     } else {
         fmt.Println("a is odd")
